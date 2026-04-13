@@ -162,7 +162,7 @@ Cryptostar — одностраничный сайт с двумя слоями 
   }
 ]
 ```
-- Данные на сервер отправляются с **типом multipart/form-data методом POST на адрес https://cryptostar.grading.htmlacademy.pro/
+- Данные на сервер отправляются с типом multipart/form-data методом POST на адрес https://cryptostar.grading.htmlacademy.pro/
 - Поля, которые ожидает сервер (их нужно указать в атрибутах `name`):
   - `type` — тип сделки (`BUY` или `SELL`)
   - `contractorId` — идентификатор контрагента
