@@ -10,7 +10,9 @@
     <link rel="preload" href="fonts/exo2-regular.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="fonts/exo2-semibold.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="fonts/exo2-bold.woff2" as="font" crossorigin="anonymous">
+    <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="css/style.min.css">
+    <script src="vendor/leaflet/leaflet.js" defer></script>
 </head>
 
 <body>
@@ -153,7 +155,7 @@
                         <svg width="20" height="20" aria-hidden="true">
                             <use xlink:href="#icon-user"></use>
                         </svg>
-                        <span>
+                        <span id="user-name">
                             <!-- Вставьте сюда имя пользователя -->
                         </span>
                     </span>
@@ -183,7 +185,7 @@
                 </div>
             </div>
 
-            <div class="container">
+            <div class="container" id="contractors">
                 <div class="users-nav">
                     <div class="users-nav__tabs">
                         <div class="tabs no-transition-global tabs--toggle-buy-sell" data-tabs="parent"
@@ -208,9 +210,9 @@
                             data-delay="300">
                             <!-- При переключении с карты на список и обратно нужно выделить активный пункт .is-active -->
                             <div class="tabs__controls" data-tabs="controls">
-                                <button class="tabs__control btn is-active" type="button"
+                                <button class="tabs__control btn is-active" type="button" id="user-list"
                                     data-tabs="control">Cписок</button>
-                                <button class="tabs__control btn" type="button" data-tabs="control">Карта</button>
+                                <button class="tabs__control btn" type="button" id="user-map" data-tabs="control">Карта</button>
                             </div>
                         </div>
                     </div>
@@ -252,8 +254,8 @@
             </div>
 
             <!-- При переключении на карту нужно отобразить данный контейнер -->
-            <div class="container" style="display: none">
-                <div class="map">
+            <div class="container" id="map" hidden>
+                <div class="map" id="map-canvas">
                     <!--
                         Карту нужно отрисовать в этот контейнер. Иконки для карты -
                         img/pin.svg и img/pin-verified.svg для обычных пользователей

@@ -1,19 +1,19 @@
 import {createContractor} from './contractor.js';
 import {ContractorsStatus} from './const.js';
+import {filterContractors, filterSellers} from './filter.js';
+import {addMarkers, initMap} from './map.js';
 
-const usersTable = document.querySelector('.users-list__table-body');
+const usersTableElement = document.querySelector('.users-list__table-body');
 const toggleBuySellElement = document.querySelector('.tabs--toggle-buy-sell');
-const checkedUsersElement = document.querySelector('#checked-users');
+const toggleCustomElement = document.querySelector('#checked-users');
+const toggleListMapElement = document.querySelector('.tabs--toggle-list-map');
+const contractorsElement = document.querySelector('.users-list');
+const mapElement = document.querySelector('#map');
+
+const activeClassName = 'is-active';
 
 let isVerifiedContractor = false;
 let contractorStatus = ContractorsStatus.Seller;
-
-const filterByStatus = (contractor) => contractor.status === contractorStatus;
-
-const filterByVerified = (contractor) => isVerifiedContractor ? contractor.isVerified : contractor;
-
-const filterContractors = (contractors) => contractors.filter((contractor) =>
-  filterByStatus(contractor) && filterByVerified(contractor));
 
 const createContractorsList = (contractors) => {
   const fragment = document.createDocumentFragment();
@@ -24,14 +24,13 @@ const createContractorsList = (contractors) => {
 };
 
 const getFilteredContractors = (contractors) => {
-  usersTable.querySelectorAll('.users-list__table-row')
+  usersTableElement.querySelectorAll('.users-list__table-row')
     .forEach((element) => element.remove());
 
-  usersTable.append(createContractorsList(filterContractors(contractors)));
+  usersTableElement.append(createContractorsList(filterContractors(contractors, contractorStatus, isVerifiedContractor)));
 };
 
-const toggleBuySellClick = (contractors) => (evt) => {
-  const activeClassName = 'is-active';
+const onToggleBuySellClick = (contractors) => (evt) => {
   const buttonElement = evt.target.closest('.tabs__control');
 
   if (buttonElement) {
@@ -47,15 +46,44 @@ const toggleBuySellClick = (contractors) => (evt) => {
   }
 };
 
-const onCheckedUsersChange = (contractors) => () => {
-  isVerifiedContractor = checkedUsersElement.checked;
+const onToggleCustomChange = (contractors) => () => {
+  isVerifiedContractor = toggleCustomElement.checked;
+
+  const sellers = filterSellers(contractors, isVerifiedContractor);
 
   getFilteredContractors(contractors);
+  addMarkers(sellers);
+};
+
+const onToggleListMapClick = (contractors) => (evt) => {
+  const buttonElement = evt.target.closest('.tabs__control');
+
+  if (buttonElement) {
+    const sellers = filterSellers(contractors, isVerifiedContractor);
+    const activeButton = toggleListMapElement.querySelector(`.${activeClassName}`);
+
+    if (activeButton !== buttonElement) {
+      activeButton.classList.remove(activeClassName);
+      buttonElement.classList.add(activeClassName);
+
+      if (buttonElement.id === 'user-list') {
+        mapElement.setAttribute('hidden', '');
+        contractorsElement.removeAttribute('hidden');
+      } else {
+        contractorsElement.setAttribute('hidden', '');
+        mapElement.removeAttribute('hidden');
+
+        initMap();
+        addMarkers(sellers);
+      }
+    }
+  }
 };
 
 export const renderContractors = (contractors) => {
-  usersTable.append(createContractorsList(filterContractors(contractors)));
+  usersTableElement.append(createContractorsList(filterContractors(contractors, contractorStatus)));
 
-  toggleBuySellElement.addEventListener('click', toggleBuySellClick(contractors));
-  checkedUsersElement.addEventListener('change', onCheckedUsersChange(contractors));
+  toggleBuySellElement.addEventListener('click', onToggleBuySellClick(contractors));
+  toggleCustomElement.addEventListener('change', onToggleCustomChange(contractors));
+  toggleListMapElement.addEventListener('click', onToggleListMapClick(contractors));
 };
