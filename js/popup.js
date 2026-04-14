@@ -1,4 +1,5 @@
 import {getFormattedNumber} from './utils.js';
+import {renderModal} from './modal.js';
 
 const popupElement = document.querySelector('#map-baloon__template')
   .content.querySelector('.user-card');
@@ -39,6 +40,11 @@ export const createPopup = (contractor) => {
 
   badgesList.innerHTML = '';
   badgesList.append(methods);
+
+  element.querySelector('.user-card__change-btn')
+    .addEventListener('click', () => {
+      renderModal(contractor);
+    });
 
   return element;
 };

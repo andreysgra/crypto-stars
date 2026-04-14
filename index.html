@@ -294,7 +294,7 @@
         Обратите внимание, что при открытии попапа также нужно убрать скролл с body,
         для этого можете использовать класс "scroll-lock"
     -->
-    <div class="modal modal--buy" style="display: none;">
+    <div class="modal modal--buy" style="display: none; z-index: 1000;">
         <div class="modal__wrapper">
             <div class="modal__overlay" data-close-modal></div>
             <div class="modal__content">
@@ -313,17 +313,23 @@
                     <input type="hidden" name="receivingCurrency">
 
                     <div class="transaction-info">
-                        <p class="transaction-info__item transaction-info__item--name"><span
-                                class="transaction-info__label">Пользователь</span><span class="transaction-info__data">
-                                <svg width="20" height="20" aria-hidden="true">
-                                    <use xlink:href="#icon-star"></use>
-                                </svg>John Smith</span></p>
-                        <p class="transaction-info__item transaction-info__item--exchangerate"><span
-                                class="transaction-info__label">Курс</span><span class="transaction-info__data">9 999
-                                999&nbsp;₽</span></p>
-                        <p class="transaction-info__item transaction-info__item--cashlimit"><span
-                                class="transaction-info__label">Лимит</span><span class="transaction-info__data">9 999
-                                999&nbsp;₽&nbsp;-&nbsp;9 999 999 000&nbsp;₽</span></p>
+                        <p class="transaction-info__item transaction-info__item--name">
+                          <span class="transaction-info__label">Пользователь</span>
+                          <span class="transaction-info__data">
+                            <svg width="20" height="20" aria-hidden="true">
+                              <use xlink:href="#icon-star"></use>
+                            </svg>
+                            <span id="modal-user-name">John Smith</span>
+                          </span>
+                        </p>
+                        <p class="transaction-info__item transaction-info__item--exchangerate">
+                          <span class="transaction-info__label">Курс</span>
+                          <span class="transaction-info__data" id="modal-exchangerate">9 999 999&nbsp;₽</span>
+                        </p>
+                        <p class="transaction-info__item transaction-info__item--cashlimit">
+                          <span class="transaction-info__label">Лимит</span>
+                          <span class="transaction-info__data" id="modal-limit">9 999 999&nbsp;₽&nbsp;-&nbsp;9 999 999 000&nbsp;₽</span>
+                        </p>
                     </div>
                     <div class="modal__container modal__container--small">
                         <div class="modal__input-wrapper modal__input-wrapper--min">

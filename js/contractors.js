@@ -2,6 +2,7 @@ import {createContractor} from './contractor.js';
 import {ContractorsStatus} from './const.js';
 import {filterContractors, filterSellers} from './filter.js';
 import {addMarkers, initMap} from './map.js';
+import {renderModal} from './modal.js';
 
 const usersTableElement = document.querySelector('.users-list__table-body');
 const toggleBuySellElement = document.querySelector('.tabs--toggle-buy-sell');
@@ -80,10 +81,21 @@ const onToggleListMapClick = (contractors) => (evt) => {
   }
 };
 
+const onExchangeButtonClick = (contractors) => (evt) => {
+  const buttonElement = evt.target.closest('.btn--greenborder');
+
+  if (buttonElement) {
+    const currentContractor = contractors.find((contractor) => contractor.id === buttonElement.dataset.id);
+
+    renderModal(currentContractor);
+  }
+};
+
 export const renderContractors = (contractors) => {
   usersTableElement.append(createContractorsList(filterContractors(contractors, contractorStatus)));
 
   toggleBuySellElement.addEventListener('click', onToggleBuySellClick(contractors));
   toggleCustomElement.addEventListener('change', onToggleCustomChange(contractors));
   toggleListMapElement.addEventListener('click', onToggleListMapClick(contractors));
+  usersTableElement.addEventListener('click', onExchangeButtonClick(contractors));
 };
