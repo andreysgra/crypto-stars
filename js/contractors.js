@@ -1,6 +1,7 @@
 import {createContractor} from './contractor.js';
 import {ContractorsStatus} from './const.js';
 import {filterContractors, filterSellers} from './filter.js';
+import {addMarkers, initMap} from './map.js';
 
 const usersTableElement = document.querySelector('.users-list__table-body');
 const toggleBuySellElement = document.querySelector('.tabs--toggle-buy-sell');
@@ -48,13 +49,17 @@ const onToggleBuySellClick = (contractors) => (evt) => {
 const onToggleCustomChange = (contractors) => () => {
   isVerifiedContractor = toggleCustomElement.checked;
 
+  const sellers = filterSellers(contractors, isVerifiedContractor);
+
   getFilteredContractors(contractors);
+  addMarkers(sellers);
 };
 
 const onToggleListMapClick = (contractors) => (evt) => {
   const buttonElement = evt.target.closest('.tabs__control');
 
   if (buttonElement) {
+    const sellers = filterSellers(contractors, isVerifiedContractor);
     const activeButton = toggleListMapElement.querySelector(`.${activeClassName}`);
 
     if (activeButton !== buttonElement) {
@@ -67,9 +72,10 @@ const onToggleListMapClick = (contractors) => (evt) => {
       } else {
         contractorsElement.setAttribute('hidden', '');
         mapElement.removeAttribute('hidden');
-      }
 
-      filterSellers(contractors, isVerifiedContractor);
+        initMap();
+        addMarkers(sellers);
+      }
     }
   }
 };

@@ -10,7 +10,9 @@
     <link rel="preload" href="fonts/exo2-regular.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="fonts/exo2-semibold.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="fonts/exo2-bold.woff2" as="font" crossorigin="anonymous">
+    <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="css/style.min.css">
+    <script src="vendor/leaflet/leaflet.js" defer></script>
 </head>
 
 <body>
@@ -253,7 +255,7 @@
 
             <!-- При переключении на карту нужно отобразить данный контейнер -->
             <div class="container" id="map" hidden>
-                <div class="map">
+                <div class="map" id="map-canvas">
                     <!--
                         Карту нужно отрисовать в этот контейнер. Иконки для карты -
                         img/pin.svg и img/pin-verified.svg для обычных пользователей
