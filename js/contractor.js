@@ -36,7 +36,7 @@ export const createContractor = (contractors) => {
     `${getFormattedNumber(exchangeRate)}&nbsp;₽`;
 
   element.querySelector('.users-list__table-cashlimit').innerHTML =
-    `${minAmount}&nbsp;₽&nbsp;-&nbsp;${maxAmount}&nbsp;₽`;
+    `${getFormattedNumber(minAmount)}&nbsp;₽&nbsp;-&nbsp;${getFormattedNumber(maxAmount)}&nbsp;₽`;
 
   if (status === ContractorsStatus.Seller) {
     const fragment = getPaymentMethods(paymentMethods, element);
