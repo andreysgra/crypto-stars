@@ -1,3 +1,5 @@
+import {createPopup} from './popup.js';
+
 const MAP_ZOOM = 8;
 
 const MAP_TILE_LAYER_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -25,7 +27,9 @@ const iconConfig = {
 const defaultIcon = L.icon({...iconConfig, iconUrl: IconUrl.Default});
 const verifiedIcon = L.icon({...iconConfig, iconUrl: IconUrl.Verified});
 
-const createMarker = ({coords}, icon) => L.marker(coords, {icon}).addTo(markerGroup);
+const createMarker = (contractor, icon) => L.marker(contractor.coords, {icon})
+  .addTo(markerGroup)
+  .bindPopup(createPopup(contractor));
 
 export const initMap = () => {
   L.tileLayer(MAP_TILE_LAYER_URL, {attribution: MAP_TILE_LAYER_ATTRIBUTION}).addTo(map);
