@@ -43,7 +43,7 @@ export const addMarkers = (contractors) => {
   markerGroup.clearLayers();
 
   contractors.forEach((contractor) => {
-    const icon = contractor.isVerifed ? verifiedIcon : defaultIcon;
+    const icon = contractor.isVerified ? verifiedIcon : defaultIcon;
 
     createMarker(contractor, icon);
   });
