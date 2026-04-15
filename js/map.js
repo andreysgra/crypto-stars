@@ -27,9 +27,9 @@ const iconConfig = {
 const defaultIcon = L.icon({...iconConfig, iconUrl: IconUrl.Default});
 const verifiedIcon = L.icon({...iconConfig, iconUrl: IconUrl.Verified});
 
-const createMarker = (contractor, icon) => L.marker(contractor.coords, {icon})
+const createMarker = (contractor, user, icon) => L.marker(contractor.coords, {icon})
   .addTo(markerGroup)
-  .bindPopup(createPopup(contractor));
+  .bindPopup(createPopup(contractor, user));
 
 export const initMap = () => {
   L.tileLayer(MAP_TILE_LAYER_URL, {attribution: MAP_TILE_LAYER_ATTRIBUTION}).addTo(map);
@@ -39,12 +39,12 @@ export const initMap = () => {
   markerGroup.addTo(map);
 };
 
-export const addMarkers = (contractors) => {
+export const addMarkers = (contractors, user) => {
   markerGroup.clearLayers();
 
   contractors.forEach((contractor) => {
     const icon = contractor.isVerified ? verifiedIcon : defaultIcon;
 
-    createMarker(contractor, icon);
+    createMarker(contractor, user, icon);
   });
 };

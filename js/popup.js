@@ -17,7 +17,7 @@ const getPaymentMethods = (paymentMethods, element) => {
   return fragment;
 };
 
-export const createPopup = (contractor) => {
+export const createPopup = (contractor, user) => {
   const {userName, isVerified, balance, exchangeRate, minAmount, paymentMethods} = contractor;
   const maxAmount = Math.round(balance.amount * exchangeRate);
 
@@ -43,7 +43,7 @@ export const createPopup = (contractor) => {
 
   element.querySelector('.user-card__change-btn')
     .addEventListener('click', () => {
-      renderModal(contractor);
+      renderModal(contractor, user);
     });
 
   return element;

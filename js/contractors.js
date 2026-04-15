@@ -47,16 +47,16 @@ const onToggleBuySellClick = (contractors) => (evt) => {
   }
 };
 
-const onToggleCustomChange = (contractors) => () => {
+const onToggleCustomChange = (contractors, user) => () => {
   isVerifiedContractor = toggleCustomElement.checked;
 
   const sellers = filterSellers(contractors, isVerifiedContractor);
 
   getFilteredContractors(contractors);
-  addMarkers(sellers);
+  addMarkers(sellers, user);
 };
 
-const onToggleListMapClick = (contractors) => (evt) => {
+const onToggleListMapClick = (contractors, user) => (evt) => {
   const buttonElement = evt.target.closest('.tabs__control');
 
   if (buttonElement) {
@@ -75,27 +75,27 @@ const onToggleListMapClick = (contractors) => (evt) => {
         mapElement.removeAttribute('hidden');
 
         initMap();
-        addMarkers(sellers);
+        addMarkers(sellers, user);
       }
     }
   }
 };
 
-const onExchangeButtonClick = (contractors) => (evt) => {
+const onExchangeButtonClick = (contractors, user) => (evt) => {
   const buttonElement = evt.target.closest('.btn--greenborder');
 
   if (buttonElement) {
     const currentContractor = contractors.find((contractor) => contractor.id === buttonElement.dataset.id);
 
-    renderModal(currentContractor);
+    renderModal(currentContractor, user);
   }
 };
 
-export const renderContractors = (contractors) => {
+export const renderContractors = (contractors, user) => {
   usersTableElement.append(createContractorsList(filterContractors(contractors, contractorStatus)));
 
   toggleBuySellElement.addEventListener('click', onToggleBuySellClick(contractors));
-  toggleCustomElement.addEventListener('change', onToggleCustomChange(contractors));
-  toggleListMapElement.addEventListener('click', onToggleListMapClick(contractors));
-  usersTableElement.addEventListener('click', onExchangeButtonClick(contractors));
+  toggleCustomElement.addEventListener('change', onToggleCustomChange(contractors, user));
+  toggleListMapElement.addEventListener('click', onToggleListMapClick(contractors, user));
+  usersTableElement.addEventListener('click', onExchangeButtonClick(contractors, user));
 };
