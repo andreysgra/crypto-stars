@@ -1,14 +1,18 @@
-import {ContractorsStatus} from './const.js';
+import {BASE_URL, ContractorsStatus} from './const.js';
 import {getFormattedNumber} from './utils.js';
+import {sendData} from './api.js';
 
 const exchangeFormElement = document.querySelector('.modal form');
 const modalVerifiedIconElement = exchangeFormElement.querySelector('.transaction-info__data svg');
 const modalCryptoWalletElement = document.querySelector('#modal-crypto-wallet');
 const paymentUnitElement = document.querySelector('#payment-amount .custom-input__unit');
 const creditUnitElement = document.querySelector('#credit-amount .custom-input__unit');
+const submitButtonElement = exchangeFormElement.querySelector('.modal__submit');
+const messageErrorElement = exchangeFormElement.querySelector('.modal__validation-message--error');
+const messageSuccessElement = exchangeFormElement.querySelector('.modal__validation-message--success');
 
-let globalContractor;
-let globalUser;
+let currentContractor;
+let currentUser;
 
 const getPaymentMethods = (paymentMethods) => {
   const fragment = document.createDocumentFragment();
@@ -30,8 +34,8 @@ const getPaymentMethods = (paymentMethods) => {
   return fragment;
 };
 
-const getExchangeForm = (contractor, user) => {
-  const {id, userName, isVerified, balance, exchangeRate, status, minAmount, paymentMethods, wallet} = contractor;
+const getExchangeForm = () => {
+  const {id, userName, isVerified, balance, exchangeRate, status, minAmount, paymentMethods, wallet} = currentContractor;
   const maxAmount =
     status === ContractorsStatus.Seller ? Math.round(balance.amount * exchangeRate) : balance.amount;
 
@@ -53,11 +57,11 @@ const getExchangeForm = (contractor, user) => {
     exchangeFormElement.paymentMethod.append(getPaymentMethods(paymentMethods));
 
     modalCryptoWalletElement.removeAttribute('style');
-    exchangeFormElement.wallet.value = user.wallet.address;
+    exchangeFormElement.wallet.value = currentUser.wallet.address;
     exchangeFormElement.type.value = 'BUY';
     exchangeFormElement.sendingCurrency.value = 'RUB';
   } else {
-    exchangeFormElement.paymentMethod.append(getPaymentMethods(user.paymentMethods));
+    exchangeFormElement.paymentMethod.append(getPaymentMethods(currentUser.paymentMethods));
 
     modalCryptoWalletElement.style.order = '-1';
     exchangeFormElement.wallet.value = wallet.address;
@@ -74,8 +78,8 @@ const getExchangeForm = (contractor, user) => {
 };
 
 const onPaymentsMethodsChange = () => {
-  const {status, paymentMethods} = globalContractor;
-  const methods = (status === ContractorsStatus.Seller) ? paymentMethods : globalUser.paymentMethods;
+  const {status, paymentMethods} = currentContractor;
+  const methods = (status === ContractorsStatus.Seller) ? paymentMethods : currentUser.paymentMethods;
   const currentMethod = methods.find((method) => method.provider === exchangeFormElement.paymentMethod.value);
 
   exchangeFormElement.card.value = currentMethod.accountNumber ??= '';
@@ -83,33 +87,70 @@ const onPaymentsMethodsChange = () => {
 
 const onSendingAmountInput = () => {
   exchangeFormElement.receivingAmount.value =
-    (globalContractor.status === ContractorsStatus.Seller) ?
-      exchangeFormElement.sendingAmount.value / globalContractor.exchangeRate :
-      exchangeFormElement.sendingAmount.value * globalContractor.exchangeRate;
+    (currentContractor.status === ContractorsStatus.Seller) ?
+      exchangeFormElement.sendingAmount.value / currentContractor.exchangeRate :
+      exchangeFormElement.sendingAmount.value * currentContractor.exchangeRate;
 };
 
 const onReceivingAmountInput = () => {
   exchangeFormElement.sendingAmount.value =
-    (globalContractor.status === ContractorsStatus.Seller) ?
-      exchangeFormElement.receivingAmount.value * globalContractor.exchangeRate :
-      exchangeFormElement.receivingAmount.value / globalContractor.exchangeRate;
+    (currentContractor.status === ContractorsStatus.Seller) ?
+      exchangeFormElement.receivingAmount.value * currentContractor.exchangeRate :
+      exchangeFormElement.receivingAmount.value / currentContractor.exchangeRate;
+};
+
+const disableSubmitButton = () => {
+  submitButtonElement.disabled = true;
+};
+
+const enableSubmitButton = () => {
+  submitButtonElement.disabled = false;
+};
+
+const onFailUpload = () => {
+  messageErrorElement.style.display = 'flex';
+};
+
+const onSuccessUpload = () => {
+  messageSuccessElement.style.display = 'flex';
+  exchangeFormElement.reset();
+};
+
+const onExchangeFormSubmit = (evt) => {
+  evt.preventDefault();
+
+  disableSubmitButton();
+
+  messageErrorElement.style.display = 'none';
+  messageSuccessElement.style.display = 'none';
+
+  (async () => {
+    await sendData(BASE_URL, onSuccessUpload, onFailUpload, new FormData(evt.target));
+
+    enableSubmitButton();
+  })();
 };
 
 export const initExchangeForm = (contractor, user) => {
-  globalContractor = contractor;
-  globalUser = user;
+  currentContractor = contractor;
+  currentUser = user;
 
-  getExchangeForm(contractor, user);
+  getExchangeForm();
 
   exchangeFormElement.paymentMethod.addEventListener('change', onPaymentsMethodsChange);
   exchangeFormElement.sendingAmount.addEventListener('input', onSendingAmountInput);
   exchangeFormElement.receivingAmount.addEventListener('input', onReceivingAmountInput);
+  exchangeFormElement.addEventListener('submit', onExchangeFormSubmit);
 };
 
 export const resetExchangeForm = () => {
   exchangeFormElement.reset();
 
+  messageErrorElement.style.display = 'none';
+  messageSuccessElement.style.display = 'none';
+
   exchangeFormElement.paymentMethod.removeEventListener('change', onPaymentsMethodsChange);
   exchangeFormElement.sendingAmount.removeEventListener('input', onSendingAmountInput);
   exchangeFormElement.receivingAmount.removeEventListener('input', onReceivingAmountInput);
+  exchangeFormElement.removeEventListener('submit', onExchangeFormSubmit);
 };
