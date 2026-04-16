@@ -5,8 +5,8 @@ import {renderUser} from './user.js';
 
 (async () => {
   const contractors = await getData(`${BASE_URL}/contractors`);
-  renderContractors(contractors);
-
   const user = await getData(`${BASE_URL}/user`);
+
+  renderContractors(contractors, user);
   renderUser(user);
 })();
