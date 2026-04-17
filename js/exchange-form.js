@@ -10,6 +10,8 @@ const creditUnitElement = document.querySelector('#credit-amount .custom-input__
 const submitButtonElement = exchangeFormElement.querySelector('.modal__submit');
 const messageErrorElement = exchangeFormElement.querySelector('.modal__validation-message--error');
 const messageSuccessElement = exchangeFormElement.querySelector('.modal__validation-message--success');
+const paymentExchangeButtonElement = exchangeFormElement.querySelector('#payment-amount .custom-input__btn');
+const creditExchangeButtonElement = exchangeFormElement.querySelector('#credit-amount .custom-input__btn');
 
 let currentContractor;
 let currentUser;
@@ -37,7 +39,7 @@ const getPaymentMethods = (paymentMethods) => {
 const getExchangeForm = () => {
   const {id, userName, isVerified, balance, exchangeRate, status, minAmount, paymentMethods, wallet} = currentContractor;
   const maxAmount =
-    status === ContractorsStatus.Seller ? Math.round(balance.amount * exchangeRate) : balance.amount;
+    status === ContractorsStatus.Seller ? (balance.amount * exchangeRate).toFixed(2) : balance.amount;
 
   exchangeFormElement.querySelector('#modal-user-name').textContent = userName;
 
@@ -85,18 +87,26 @@ const onPaymentsMethodsChange = () => {
   exchangeFormElement.card.value = currentMethod.accountNumber ??= '';
 };
 
-const onSendingAmountInput = () => {
+const getReceivingAmount = () => {
   exchangeFormElement.receivingAmount.value =
     (currentContractor.status === ContractorsStatus.Seller) ?
       exchangeFormElement.sendingAmount.value / currentContractor.exchangeRate :
       exchangeFormElement.sendingAmount.value * currentContractor.exchangeRate;
 };
 
-const onReceivingAmountInput = () => {
+const getSendingAmount = () => {
   exchangeFormElement.sendingAmount.value =
     (currentContractor.status === ContractorsStatus.Seller) ?
       exchangeFormElement.receivingAmount.value * currentContractor.exchangeRate :
       exchangeFormElement.receivingAmount.value / currentContractor.exchangeRate;
+};
+
+const onSendingAmountInput = () => {
+  getReceivingAmount();
+};
+
+const onReceivingAmountInput = () => {
+  getSendingAmount();
 };
 
 const disableSubmitButton = () => {
@@ -131,6 +141,30 @@ const onExchangeFormSubmit = (evt) => {
   })();
 };
 
+const onPaymentExchangeButtonClick = () => {
+  const [, cryptoBalance] = currentUser.balances;
+
+  if (currentContractor.status === ContractorsStatus.Seller) {
+    exchangeFormElement.receivingAmount.value = currentContractor.balance.amount;
+    getSendingAmount();
+  } else {
+    exchangeFormElement.sendingAmount.value = cryptoBalance.amount;
+    getReceivingAmount();
+  }
+};
+
+const onCreditExchangeButtonClick = () => {
+  const [fiatBalance] = currentUser.balances;
+
+  if (currentContractor.status === ContractorsStatus.Seller) {
+    exchangeFormElement.sendingAmount.value = fiatBalance.amount;
+    getReceivingAmount();
+  } else {
+    exchangeFormElement.receivingAmount.value = currentContractor.balance.amount;
+    getSendingAmount(fiatBalance);
+  }
+};
+
 export const initExchangeForm = (contractor, user) => {
   currentContractor = contractor;
   currentUser = user;
@@ -141,6 +175,8 @@ export const initExchangeForm = (contractor, user) => {
   exchangeFormElement.sendingAmount.addEventListener('input', onSendingAmountInput);
   exchangeFormElement.receivingAmount.addEventListener('input', onReceivingAmountInput);
   exchangeFormElement.addEventListener('submit', onExchangeFormSubmit);
+  paymentExchangeButtonElement.addEventListener('click', onPaymentExchangeButtonClick);
+  creditExchangeButtonElement.addEventListener('click', onCreditExchangeButtonClick);
 };
 
 export const resetExchangeForm = () => {
@@ -153,4 +189,6 @@ export const resetExchangeForm = () => {
   exchangeFormElement.sendingAmount.removeEventListener('input', onSendingAmountInput);
   exchangeFormElement.receivingAmount.removeEventListener('input', onReceivingAmountInput);
   exchangeFormElement.removeEventListener('submit', onExchangeFormSubmit);
+  paymentExchangeButtonElement.removeEventListener('click', onPaymentExchangeButtonClick);
+  creditExchangeButtonElement.removeEventListener('click', onCreditExchangeButtonClick);
 };
