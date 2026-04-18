@@ -172,7 +172,7 @@
                 Для удобства обращения из JS, вы можете добавить контейнерам id
                 или уникальные классы
             -->
-            <div class="container" style="display: none">
+            <div class="container" id="message-error-server" style="display: none">
                 <div class="message">
                     <span class="message__icon">
                         <svg width="60" height="60" aria-hidden="true">
@@ -245,7 +245,7 @@
                 Справедливо только для отображения типа "Список". В случае с картой
                 просто показывается пустая карта
             -->
-            <div class="container container--lightbackground" style="display: none">
+            <div class="container container--lightbackground" id="message-error-empty" style="display: none">
                 <div class="message message--noresults"><span class="message__icon">
                         <svg width="60" height="60" aria-hidden="true">
                             <use xlink:href="#icon-no-results"></use>
@@ -622,7 +622,6 @@
     </template>
 
     <script src="./js/main.js" type="module"></script>
-
 </body>
 
 </html>

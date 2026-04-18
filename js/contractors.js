@@ -10,6 +10,7 @@ const toggleCustomElement = document.querySelector('#checked-users');
 const toggleListMapElement = document.querySelector('.tabs--toggle-list-map');
 const contractorsElement = document.querySelector('.users-list');
 const mapElement = document.querySelector('#map');
+const messageEmptyElement = document.querySelector('#message-error-empty');
 
 const activeClassName = 'is-active';
 
@@ -17,6 +18,12 @@ let isVerifiedContractor = false;
 let contractorStatus = ContractorsStatus.Seller;
 
 const createContractorsList = (contractors) => {
+  if (contractors.length === 0) {
+    messageEmptyElement.style.display = 'block';
+
+    return '';
+  }
+
   const fragment = document.createDocumentFragment();
 
   contractors.forEach((contractor) => fragment.append(createContractor(contractor)));
