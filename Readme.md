@@ -2,7 +2,11 @@
 
 Криптобиржа Cryptostars — сервис покупки криптовалюты KEKS онлайн и за наличный расчёт.
 
+![Постер сайта](img/poster.jpg)
+
 Программирование: [Андрей Грачев](https://github.com/andreysgra/)
+
+[Демо проекта](https://andreysgra.github.io/crypto-stars/)
 
 [Техническое задание](Specification.md)
 
