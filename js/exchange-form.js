@@ -1,6 +1,7 @@
 import {BASE_URL, ContractorsStatus} from './const.js';
 import {getFormattedNumber} from './utils.js';
 import {sendData} from './api.js';
+import {initValidation, resetValidation, setValidation, validateElement} from './validation.js';
 
 const exchangeFormElement = document.querySelector('.modal form');
 const modalVerifiedIconElement = exchangeFormElement.querySelector('.transaction-info__data svg');
@@ -129,6 +130,10 @@ const onSuccessUpload = () => {
 const onExchangeFormSubmit = (evt) => {
   evt.preventDefault();
 
+  if (!setValidation()) {
+    return;
+  }
+
   disableSubmitButton();
 
   messageErrorElement.style.display = 'none';
@@ -147,9 +152,11 @@ const onPaymentExchangeButtonClick = () => {
   if (currentContractor.status === ContractorsStatus.Seller) {
     exchangeFormElement.receivingAmount.value = currentContractor.balance.amount;
     getSendingAmount();
+    validateElement(exchangeFormElement.sendingAmount);
   } else {
     exchangeFormElement.sendingAmount.value = cryptoBalance.amount;
     getReceivingAmount();
+    validateElement(exchangeFormElement.receivingAmount);
   }
 };
 
@@ -159,9 +166,11 @@ const onCreditExchangeButtonClick = () => {
   if (currentContractor.status === ContractorsStatus.Seller) {
     exchangeFormElement.sendingAmount.value = fiatBalance.amount;
     getReceivingAmount();
+    validateElement(exchangeFormElement.sendingAmount);
   } else {
     exchangeFormElement.receivingAmount.value = currentContractor.balance.amount;
-    getSendingAmount(fiatBalance);
+    getSendingAmount();
+    validateElement(exchangeFormElement.receivingAmount);
   }
 };
 
@@ -170,6 +179,7 @@ export const initExchangeForm = (contractor, user) => {
   currentUser = user;
 
   getExchangeForm();
+  initValidation(currentContractor, currentUser);
 
   exchangeFormElement.paymentMethod.addEventListener('change', onPaymentsMethodsChange);
   exchangeFormElement.sendingAmount.addEventListener('input', onSendingAmountInput);
@@ -181,6 +191,7 @@ export const initExchangeForm = (contractor, user) => {
 
 export const resetExchangeForm = () => {
   exchangeFormElement.reset();
+  resetValidation();
 
   messageErrorElement.style.display = 'none';
   messageSuccessElement.style.display = 'none';
